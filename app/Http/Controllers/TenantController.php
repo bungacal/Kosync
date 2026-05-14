@@ -48,6 +48,29 @@ class TenantController extends Controller
         return back()->with('status', 'Laporan berhasil dibuat.');
     }
 
+    public function history(): View
+    {
+        return view('tenant.history', [
+            'tenant' => $this->tenant(),
+            'reports' => $this->reportQuery()->where('status', 'Selesai')->latest()->get(),
+        ]);
+    }
+
+    public function rateReport(Request $request, MaintenanceReport $report): RedirectResponse
+    {
+        $this->tenant();
+        abort_unless($report->tenant_id === auth()->id(), 403);
+        abort_unless($report->status === 'Selesai', 422);
+
+        $validated = $request->validate([
+            'rating' => ['required', 'integer', 'min:1', 'max:5'],
+        ]);
+
+        $report->update(['rating' => $validated['rating']]);
+
+        return back()->with('status', 'Rating berhasil dikirim.');
+    }
+
     private function tenant()
     {
         abort_unless(auth()->user()?->role === 'tenant', 403);

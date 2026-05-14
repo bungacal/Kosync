@@ -30,4 +30,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/beranda-penghuni', [TenantController::class, 'home'])->name('tenant.home');
     Route::get('/laporan-saya', [TenantController::class, 'reports'])->name('tenant.reports');
     Route::post('/laporan-saya', [TenantController::class, 'storeReport'])->name('tenant.reports.store');
+    Route::get('/riwayat-laporan', [TenantController::class, 'history'])->name('tenant.history');
+    Route::post('/riwayat-laporan/{report}/rating', [TenantController::class, 'rateReport'])->name('tenant.reports.rating');
 });

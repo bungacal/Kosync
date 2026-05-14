@@ -17,7 +17,7 @@
           <p>Penghuni</p>
           <a class="nav-item {{ $page === 'home' ? 'active' : '' }}" href="{{ route('tenant.home') }}">Beranda</a>
           <a class="nav-item {{ $page === 'reports' ? 'active' : '' }}" href="{{ route('tenant.reports') }}">Laporan Saya</a>
-          <a class="nav-item {{ $page === 'history' ? 'active' : '' }}" href="#">Riwayat Laporan</a>
+          <a class="nav-item {{ $page === 'history' ? 'active' : '' }}" href="{{ route('tenant.history') }}">Riwayat Laporan</a>
         </nav>
         <div class="sidebar-user">
           <strong>{{ auth()->user()->name }}</strong>

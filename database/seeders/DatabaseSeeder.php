@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Kos;
+use App\Models\MaintenanceReport;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -63,6 +64,16 @@ class DatabaseSeeder extends Seeder
         $rooms->get('101')->update([
             'tenant_id' => $tenant->id,
             'status' => 'Terisi',
+        ]);
+
+        MaintenanceReport::query()->create([
+            'kos_id' => $kos->id,
+            'tenant_id' => $tenant->id,
+            'room_id' => $rooms->get('101')->id,
+            'issue' => 'Pintu kamar sudah diperbaiki',
+            'category' => 'Pintu',
+            'status' => 'Selesai',
+            'finished_at' => now()->subDay(),
         ]);
     }
 }
