@@ -28,4 +28,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/pemilik', [OwnerController::class, 'home'])->name('owner.home');
     Route::get('/beranda-penghuni', [TenantController::class, 'home'])->name('tenant.home');
+    Route::get('/laporan-saya', [TenantController::class, 'reports'])->name('tenant.reports');
+    Route::post('/laporan-saya', [TenantController::class, 'storeReport'])->name('tenant.reports.store');
 });
