@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kamar;
 use App\Models\Kos;
-use App\Models\Room;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,13 +24,13 @@ class AuthController extends Controller
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
-            'role' => ['required', Rule::in(['owner', 'tenant'])],
+            'peran' => ['required', Rule::in(['pemilik', 'penghuni'])],
         ]);
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             return back()
-                ->withErrors(['email' => 'Email, password, atau role tidak sesuai.'])
-                ->onlyInput('email', 'role');
+                ->withErrors(['email' => 'Email, password, atau peran tidak sesuai.'])
+                ->onlyInput('email', 'peran');
         }
 
         $request->session()->regenerate();
@@ -38,47 +38,47 @@ class AuthController extends Controller
         return redirect()->intended($this->homeRoute());
     }
 
-    public function showTenantSignup(): View
+    public function showPenghuniSignup(): View
     {
         return view('auth.signup-tenant', [
-            'kosList' => Kos::query()->with(['rooms' => fn ($query) => $query->where('status', 'Kosong')->orderBy('number')])->orderBy('name')->get(),
+            'kosList' => Kos::query()->with(['kamar' => fn ($query) => $query->where('status', 'Kosong')->orderBy('nomor')])->orderBy('nama')->get(),
         ]);
     }
 
-    public function signupTenant(Request $request): RedirectResponse
+    public function signupPenghuni(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:6'],
             'kos_id' => ['required', 'exists:kos,id'],
-            'room_id' => ['required', 'exists:rooms,id'],
+            'kamar_id' => ['required', 'exists:kamar,id'],
         ]);
 
-        $room = Room::query()
-            ->whereKey($validated['room_id'])
+        $kamar = Kamar::query()
+            ->whereKey($validated['kamar_id'])
             ->where('kos_id', $validated['kos_id'])
             ->where('status', 'Kosong')
             ->first();
 
-        if (! $room) {
+        if (! $kamar) {
             return back()
-                ->withErrors(['room_id' => 'Kamar tidak tersedia.'])
+                ->withErrors(['kamar_id' => 'Kamar tidak tersedia.'])
                 ->withInput();
         }
 
-        $user = DB::transaction(function () use ($validated, $room) {
+        $user = DB::transaction(function () use ($validated, $kamar) {
             $user = User::query()->create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => $validated['password'],
-                'role' => 'tenant',
+                'peran' => 'penghuni',
                 'kos_id' => $validated['kos_id'],
-                'room_id' => $room->id,
+                'kamar_id' => $kamar->id,
             ]);
 
-            $room->update([
-                'tenant_id' => $user->id,
+            $kamar->update([
+                'penghuni_id' => $user->id,
                 'status' => 'Terisi',
             ]);
 
@@ -88,15 +88,15 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('tenant.home');
+        return redirect()->route('penghuni.home');
     }
 
-    public function showOwnerSignup(): View
+    public function showPemilikSignup(): View
     {
         return view('auth.signup-owner');
     }
 
-    public function signupOwner(Request $request): RedirectResponse
+    public function signupPemilik(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -110,12 +110,12 @@ class AuthController extends Controller
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => $validated['password'],
-                'role' => 'owner',
+                'peran' => 'pemilik',
             ]);
 
             $kos = Kos::query()->create([
-                'owner_id' => $user->id,
-                'name' => $validated['kos_name'],
+                'pemilik_id' => $user->id,
+                'nama' => $validated['kos_name'],
             ]);
 
             $user->update(['kos_id' => $kos->id]);
@@ -126,7 +126,7 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('owner.home');
+        return redirect()->route('pemilik.home');
     }
 
     public function logout(Request $request): RedirectResponse
@@ -141,8 +141,8 @@ class AuthController extends Controller
 
     private function homeRoute(): string
     {
-        return Auth::user()?->role === 'owner'
-            ? route('owner.home')
-            : route('tenant.home');
+        return Auth::user()?->peran === 'pemilik'
+            ? route('pemilik.home')
+            : route('penghuni.home');
     }
 }

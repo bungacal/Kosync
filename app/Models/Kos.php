@@ -7,20 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['owner_id', 'name'])]
+#[Fillable(['pemilik_id', 'nama'])]
 class Kos extends Model
 {
-    public function owner(): BelongsTo
+    public function pemilik(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'owner_id');
+        return $this->belongsTo(User::class, 'pemilik_id');
     }
 
-    public function rooms(): HasMany
+    public function kamar(): HasMany
     {
-        return $this->hasMany(Room::class);
+        return $this->hasMany(Kamar::class);
     }
 
-    public function tenants(): HasMany
+    public function penghuni(): HasMany
     {
         return $this->hasMany(User::class);
     }

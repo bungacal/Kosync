@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Kamar;
 use App\Models\Kos;
-use App\Models\MaintenanceReport;
-use App\Models\Room;
+use App\Models\LaporanPerawatan;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -18,62 +18,63 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        Room::query()->delete();
+        LaporanPerawatan::query()->delete();
+        Kamar::query()->delete();
         Kos::query()->delete();
         User::query()->delete();
 
-        $owner = User::query()->create([
+        $pemilik = User::query()->create([
             'name' => 'Sarah Pemilik Kos',
-            'email' => 'owner@kosync.test',
-            'password' => 'owner123',
-            'role' => 'owner',
+            'email' => 'admin@gmail.com',
+            'password' => 'admin123',
+            'peran' => 'pemilik',
         ]);
 
         $kos = Kos::query()->create([
-            'owner_id' => $owner->id,
-            'name' => 'Kos Kencana',
+            'pemilik_id' => $pemilik->id,
+            'nama' => 'Kos Kencana',
         ]);
 
-        $owner->update(['kos_id' => $kos->id]);
+        $pemilik->update(['kos_id' => $kos->id]);
 
-        $rooms = collect([
-            ['number' => '101', 'floor' => 'Lantai 1'],
-            ['number' => '102', 'floor' => 'Lantai 1'],
-            ['number' => '103', 'floor' => 'Lantai 1'],
-            ['number' => '104', 'floor' => 'Lantai 1'],
-            ['number' => '201', 'floor' => 'Lantai 2'],
-            ['number' => '202', 'floor' => 'Lantai 2'],
-            ['number' => '203', 'floor' => 'Lantai 2'],
-            ['number' => '204', 'floor' => 'Lantai 2'],
-        ])->map(fn (array $room) => Room::query()->create([
+        $kamar = collect([
+            ['nomor' => '101', 'lantai' => 'Lantai 1'],
+            ['nomor' => '102', 'lantai' => 'Lantai 1'],
+            ['nomor' => '103', 'lantai' => 'Lantai 1'],
+            ['nomor' => '104', 'lantai' => 'Lantai 1'],
+            ['nomor' => '201', 'lantai' => 'Lantai 2'],
+            ['nomor' => '202', 'lantai' => 'Lantai 2'],
+            ['nomor' => '203', 'lantai' => 'Lantai 2'],
+            ['nomor' => '204', 'lantai' => 'Lantai 2'],
+        ])->map(fn (array $kamar) => Kamar::query()->create([
             'kos_id' => $kos->id,
-            'number' => $room['number'],
-            'floor' => $room['floor'],
+            'nomor' => $kamar['nomor'],
+            'lantai' => $kamar['lantai'],
             'status' => 'Kosong',
-        ]))->keyBy('number');
+        ]))->keyBy('nomor');
 
-        $tenant = User::query()->create([
+        $penghuni = User::query()->create([
             'name' => 'Nama Penghuni Kos',
-            'email' => 'penghuni@kosync.test',
-            'password' => 'penghuni123',
-            'role' => 'tenant',
+            'email' => 'user@gmail.com',
+            'password' => 'admin123',
+            'peran' => 'penghuni',
             'kos_id' => $kos->id,
-            'room_id' => $rooms->get('101')->id,
+            'kamar_id' => $kamar->get('101')->id,
         ]);
 
-        $rooms->get('101')->update([
-            'tenant_id' => $tenant->id,
+        $kamar->get('101')->update([
+            'penghuni_id' => $penghuni->id,
             'status' => 'Terisi',
         ]);
 
-        MaintenanceReport::query()->create([
+        LaporanPerawatan::query()->create([
             'kos_id' => $kos->id,
-            'tenant_id' => $tenant->id,
-            'room_id' => $rooms->get('101')->id,
-            'issue' => 'Pintu kamar sudah diperbaiki',
-            'category' => 'Pintu',
+            'penghuni_id' => $penghuni->id,
+            'kamar_id' => $kamar->get('101')->id,
+            'masalah' => 'Pintu kamar sudah diperbaiki',
+            'kategori' => 'Pintu',
             'status' => 'Selesai',
-            'finished_at' => now()->subDay(),
+            'selesai_pada' => now()->subDay(),
         ]);
     }
 }

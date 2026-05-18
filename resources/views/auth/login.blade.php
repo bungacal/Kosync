@@ -12,9 +12,9 @@
     @csrf
     <label class="field">
       <span>Login Sebagai</span>
-      <select name="role" required>
-        <option value="tenant" @selected(old('role', 'tenant') === 'tenant')>Penghuni Kos</option>
-        <option value="owner" @selected(old('role') === 'owner')>Pemilik Kos</option>
+      <select name="peran" required>
+        <option value="penghuni" @selected(old('peran', 'penghuni') === 'penghuni')>Penghuni Kos</option>
+        <option value="pemilik" @selected(old('peran') === 'pemilik')>Pemilik Kos</option>
       </select>
     </label>
     <label class="field">
@@ -32,7 +32,7 @@
   </form>
 
   <div class="auth-links">
-    <a href="{{ route('register.tenant') }}">Signup Penghuni</a>
-    <a href="{{ route('register.owner') }}">Signup Pemilik</a>
+    <a href="{{ route('register.penghuni') }}">Signup Penghuni</a>
+    <a href="{{ route('register.pemilik') }}">Signup Pemilik</a>
   </div>
 @endsection

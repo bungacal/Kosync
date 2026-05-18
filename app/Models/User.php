@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role', 'kos_id', 'room_id'])]
+#[Fillable(['name', 'email', 'password', 'peran', 'kos_id', 'kamar_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -37,13 +37,13 @@ class User extends Authenticatable
         return $this->belongsTo(Kos::class);
     }
 
-    public function ownedKos(): HasOne
+    public function kosMilik(): HasOne
     {
-        return $this->hasOne(Kos::class, 'owner_id');
+        return $this->hasOne(Kos::class, 'pemilik_id');
     }
 
-    public function room(): BelongsTo
+    public function kamar(): BelongsTo
     {
-        return $this->belongsTo(Room::class);
+        return $this->belongsTo(Kamar::class);
     }
 }

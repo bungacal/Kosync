@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('kos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('owner_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->string('name');
+            $table->foreignId('pemilik_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('nama');
             $table->timestamps();
         });
     }

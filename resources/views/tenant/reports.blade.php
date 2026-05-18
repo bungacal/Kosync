@@ -8,19 +8,19 @@
   <section class="page active">
     <article class="panel">
       <div class="panel-header"><h2>Buat Laporan Baru</h2></div>
-      <form class="report-form" method="POST" action="{{ route('tenant.reports.store') }}">
+      <form class="report-form" method="POST" action="{{ route('penghuni.reports.store') }}">
         @csrf
         <label class="field">
           <span>Nama Kos</span>
-          <input type="text" value="{{ $tenant->kos?->name }}" disabled />
+          <input type="text" value="{{ $penghuni->kos?->nama }}" disabled />
         </label>
         <label class="field">
           <span>Nomor Kamar</span>
-          <input type="text" value="{{ $tenant->room?->number }}" disabled />
+          <input type="text" value="{{ $penghuni->kamar?->nomor }}" disabled />
         </label>
         <label class="field span-2">
           <span>Kategori Kerusakan</span>
-          <select name="category" required>
+          <select name="kategori" required>
             <option value="" selected disabled>Pilih kategori</option>
             <option>Listrik</option>
             <option>Air</option>
@@ -31,7 +31,7 @@
         </label>
         <label class="field span-2">
           <span>Deskripsi Masalah</span>
-          <textarea name="issue" placeholder="Contoh: Lampu kamar mati sejak pagi" required>{{ old('issue') }}</textarea>
+          <textarea name="masalah" placeholder="Contoh: Lampu kamar mati sejak pagi" required>{{ old('masalah') }}</textarea>
         </label>
         @if ($errors->any())
           <div class="alert span-2">{{ $errors->first() }}</div>
@@ -46,9 +46,9 @@
     <article class="panel">
       <div class="panel-header"><h2>Laporan Aktif Saya</h2></div>
       <div class="report-list">
-        @forelse ($activeReports as $report)
+        @forelse ($laporanAktif as $report)
           <div class="report-row">
-            <div><h3>{{ $report->issue }}</h3><p>{{ $report->category }} - Kamar {{ $report->room?->number }}</p></div>
+            <div><h3>{{ $report->masalah }}</h3><p>{{ $report->kategori }} - Kamar {{ $report->kamar?->nomor }}</p></div>
             <span class="status-pill {{ $report->status === 'Diproses' ? 'process' : 'pending' }}">{{ $report->status }}</span>
           </div>
         @empty

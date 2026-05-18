@@ -8,7 +8,7 @@
     <h1>Signup Pemilik</h1>
   </div>
 
-  <form class="form-grid" method="POST" action="{{ route('register.owner.store') }}">
+  <form class="form-grid" method="POST" action="{{ route('register.pemilik.store') }}">
     @csrf
     <label class="field"><span>Nama Pemilik</span><input type="text" name="name" value="{{ old('name') }}" required /></label>
     <label class="field"><span>Nama Kos</span><input type="text" name="kos_name" value="{{ old('kos_name') }}" required /></label>

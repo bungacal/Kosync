@@ -9,30 +9,30 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   </head>
-  <body data-role="tenant" data-page="{{ $page ?? 'home' }}">
+  <body data-role="penghuni" data-page="{{ $page ?? 'home' }}">
     <div class="app-shell">
       <aside class="sidebar">
-        <a class="brand" href="{{ route('tenant.home') }}" aria-label="Kosync">
+        <a class="brand" href="{{ route('penghuni.home') }}" aria-label="Kosync">
           <img src="{{ asset('kosync-logo.jpeg') }}" alt="Kosync logo" class="brand-logo" />
           <span><strong>KOSYNC</strong><small>Kost Management System</small></span>
         </a>
 
         <nav class="nav-section" aria-label="Menu utama">
           <p>Utama</p>
-          <a class="nav-item visible {{ $page === 'home' ? 'active' : '' }}" href="{{ route('tenant.home') }}"><i data-lucide="home"></i><span>Beranda</span></a>
-          <a class="nav-item visible {{ $page === 'reports' ? 'active' : '' }}" href="{{ route('tenant.reports') }}"><i data-lucide="file-plus-2"></i><span>Laporan Saya</span></a>
+          <a class="nav-item visible {{ $page === 'home' ? 'active' : '' }}" href="{{ route('penghuni.home') }}"><i data-lucide="home"></i><span>Beranda</span></a>
+          <a class="nav-item visible {{ $page === 'reports' ? 'active' : '' }}" href="{{ route('penghuni.reports') }}"><i data-lucide="file-plus-2"></i><span>Laporan Saya</span></a>
         </nav>
 
         <nav class="nav-section" aria-label="Kelola">
           <p>Kelola</p>
-          <a class="nav-item visible {{ $page === 'history' ? 'active' : '' }}" href="{{ route('tenant.history') }}"><i data-lucide="history"></i><span>Riwayat Laporan</span></a>
+          <a class="nav-item visible {{ $page === 'history' ? 'active' : '' }}" href="{{ route('penghuni.history') }}"><i data-lucide="history"></i><span>Riwayat Laporan</span></a>
         </nav>
 
         <div class="sidebar-user">
           <span class="avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
           <span>
             <strong>{{ auth()->user()->name }}</strong>
-            <small>Kamar {{ auth()->user()->room?->number ?? '-' }}</small>
+            <small>Kamar {{ auth()->user()->kamar?->nomor ?? '-' }}</small>
           </span>
         </div>
       </aside>
@@ -46,7 +46,7 @@
             <div class="topbar-actions">
               <div class="segmented">
                 <span class="role-switch disabled" aria-disabled="true">Pemilik Kos</span>
-                <a class="role-switch active" href="{{ route('tenant.home') }}">Penghuni Kos</a>
+                <a class="role-switch active" href="{{ route('penghuni.home') }}">Penghuni Kos</a>
               </div>
               <form method="POST" action="{{ route('logout') }}">
                 @csrf

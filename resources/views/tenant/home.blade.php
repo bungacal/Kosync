@@ -9,24 +9,24 @@
     <div class="row-between panel">
       <div>
         <p class="eyebrow">Selamat Datang</p>
-        <h2>{{ $tenant->name }}</h2>
-        <p class="muted">{{ $tenant->kos?->name }} - Kamar {{ $tenant->room?->number ?? '-' }}</p>
+        <h2>{{ $penghuni->name }}</h2>
+        <p class="muted">{{ $penghuni->kos?->nama }} - Kamar {{ $penghuni->kamar?->nomor ?? '-' }}</p>
       </div>
-      <a class="primary-button" href="{{ route('tenant.reports') }}">Buat Laporan</a>
+      <a class="primary-button" href="{{ route('penghuni.reports') }}">Buat Laporan</a>
     </div>
 
     <div class="stats-grid">
-      <article class="stat-card"><span>Kos</span><strong>{{ $tenant->kos?->name ?? '-' }}</strong><small>Nama kos</small></article>
-      <article class="stat-card"><span>Kamar</span><strong>{{ $tenant->room?->number ?? '-' }}</strong><small>{{ $tenant->room?->floor ?? '-' }}</small></article>
-      <article class="stat-card"><span>Laporan Aktif</span><strong>{{ $activeReports->count() }}</strong><small>Pending / Diproses</small></article>
+      <article class="stat-card"><span>Kos</span><strong>{{ $penghuni->kos?->nama ?? '-' }}</strong><small>Nama kos</small></article>
+      <article class="stat-card"><span>Kamar</span><strong>{{ $penghuni->kamar?->nomor ?? '-' }}</strong><small>{{ $penghuni->kamar?->lantai ?? '-' }}</small></article>
+      <article class="stat-card"><span>Laporan Aktif</span><strong>{{ $laporanAktif->count() }}</strong><small>Pending / Diproses</small></article>
     </div>
 
     <article class="panel">
       <div class="panel-header"><h2>Laporan Aktif Saya</h2></div>
       <div class="report-list">
-        @forelse ($activeReports as $report)
+        @forelse ($laporanAktif as $report)
           <div class="report-row">
-            <div><h3>{{ $report->issue }}</h3><p>{{ $report->category }} - Kamar {{ $report->room?->number }}</p></div>
+            <div><h3>{{ $report->masalah }}</h3><p>{{ $report->kategori }} - Kamar {{ $report->kamar?->nomor }}</p></div>
             <span class="status-pill {{ $report->status === 'Diproses' ? 'process' : 'pending' }}">{{ $report->status }}</span>
           </div>
         @empty

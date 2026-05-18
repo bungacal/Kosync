@@ -9,18 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('tenant')->after('email');
-            $table->foreignId('kos_id')->nullable()->after('role')->constrained('kos')->nullOnDelete();
-            $table->foreignId('room_id')->nullable()->after('kos_id')->constrained('rooms')->nullOnDelete();
+            $table->string('peran')->default('penghuni')->after('email');
+            $table->foreignId('kos_id')->nullable()->after('peran')->constrained('kos')->nullOnDelete();
+            $table->foreignId('kamar_id')->nullable()->after('kos_id')->constrained('kamar')->nullOnDelete();
         });
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('room_id');
+            $table->dropConstrainedForeignId('kamar_id');
             $table->dropConstrainedForeignId('kos_id');
-            $table->dropColumn('role');
+            $table->dropColumn('peran');
         });
     }
 };

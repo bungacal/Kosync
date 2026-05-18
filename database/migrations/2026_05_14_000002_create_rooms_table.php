@@ -8,21 +8,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('rooms', function (Blueprint $table) {
+        Schema::create('kamar', function (Blueprint $table) {
             $table->id();
             $table->foreignId('kos_id')->constrained('kos')->cascadeOnDelete();
-            $table->foreignId('tenant_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->string('number');
-            $table->string('floor');
+            $table->foreignId('penghuni_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('nomor');
+            $table->string('lantai');
             $table->string('status')->default('Kosong');
             $table->timestamps();
 
-            $table->unique(['kos_id', 'number']);
+            $table->unique(['kos_id', 'nomor']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('rooms');
+        Schema::dropIfExists('kamar');
     }
 };

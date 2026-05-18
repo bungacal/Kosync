@@ -8,22 +8,22 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('maintenance_reports', function (Blueprint $table) {
+        Schema::create('laporan_perawatan', function (Blueprint $table) {
             $table->id();
             $table->foreignId('kos_id')->constrained('kos')->cascadeOnDelete();
-            $table->foreignId('tenant_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('room_id')->constrained('rooms')->cascadeOnDelete();
-            $table->string('issue');
-            $table->string('category');
+            $table->foreignId('penghuni_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('kamar_id')->constrained('kamar')->cascadeOnDelete();
+            $table->string('masalah');
+            $table->string('kategori');
             $table->string('status')->default('Pending');
-            $table->unsignedTinyInteger('rating')->nullable();
-            $table->timestamp('finished_at')->nullable();
+            $table->unsignedTinyInteger('nilai_rating')->nullable();
+            $table->timestamp('selesai_pada')->nullable();
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('maintenance_reports');
+        Schema::dropIfExists('laporan_perawatan');
     }
 };

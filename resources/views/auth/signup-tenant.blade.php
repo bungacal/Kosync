@@ -8,7 +8,7 @@
     <h1>Signup Penghuni</h1>
   </div>
 
-  <form class="form-grid" method="POST" action="{{ route('register.tenant.store') }}">
+  <form class="form-grid" method="POST" action="{{ route('register.penghuni.store') }}">
     @csrf
     <label class="field"><span>Nama Lengkap</span><input type="text" name="name" value="{{ old('name') }}" required /></label>
     <label class="field"><span>Email</span><input type="email" name="email" value="{{ old('email') }}" required /></label>
@@ -18,17 +18,17 @@
       <select name="kos_id" required>
         <option value="" selected disabled>Pilih kos</option>
         @foreach ($kosList as $kos)
-          <option value="{{ $kos->id }}" @selected((int) old('kos_id') === $kos->id)>{{ $kos->name }}</option>
+          <option value="{{ $kos->id }}" @selected((int) old('kos_id') === $kos->id)>{{ $kos->nama }}</option>
         @endforeach
       </select>
     </label>
     <label class="field">
       <span>Nomor Kamar</span>
-      <select name="room_id" required>
+      <select name="kamar_id" required>
         <option value="" selected disabled>Pilih kamar kosong</option>
         @foreach ($kosList as $kos)
-          @foreach ($kos->rooms as $room)
-            <option value="{{ $room->id }}" @selected((int) old('room_id') === $room->id)>{{ $kos->name }} - {{ $room->number }} ({{ $room->floor }})</option>
+          @foreach ($kos->kamar as $kamar)
+            <option value="{{ $kamar->id }}" @selected((int) old('kamar_id') === $kamar->id)>{{ $kos->nama }} - {{ $kamar->nomor }} ({{ $kamar->lantai }})</option>
           @endforeach
         @endforeach
       </select>
