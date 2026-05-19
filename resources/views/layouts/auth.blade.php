@@ -12,7 +12,7 @@
 		<main class="auth-page">
 				<section class="auth-card">
 						<a class="brand auth-brand" href="{{ route('login') }}">
-								<span class="brand-mark"><img src="{{ asset('kosync-logo.jpeg') }}" alt=""></span>
+								<span class="brand-mark"><img style="width: 100%" src="{{ asset('kosync-logo.jpeg') }}" alt=""></span>
 								<span><strong>KOSYNC</strong><small>Kost Management System</small></span>
 						</a>
 						@yield('content')
