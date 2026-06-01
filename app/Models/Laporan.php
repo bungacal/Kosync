@@ -13,13 +13,13 @@ class Laporan extends Model
     protected $table = 'laporan';
 
     protected $fillable = [
-        'penghuni',   // string  – nama penghuni
-        'kamar',      // string  – nomor / nama kamar (e.g. "101", "Lobby")
-        'masalah',    // string  – deskripsi masalah
-        'kategori',   // string  – Listrik | Plumbing | AC | …
-        'status',     // string  – Pending | Diproses | Selesai
-        'assign',     // string  – nama teknisi / petugas (nullable)
-        'estimasi',   // string  – estimasi penyelesaian (nullable)
+        'penghuni',   
+        'kamar',      
+        'masalah',    
+        'kategori',   
+        'status',     
+        'assign',     
+        'estimasi',   
     ];
 }
 
