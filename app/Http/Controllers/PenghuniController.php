@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Broadcast;
 use App\Models\LaporanPerawatan;
+use App\Models\Pesan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -54,6 +56,43 @@ class PenghuniController extends Controller
             'penghuni' => $this->penghuni(),
             'laporan' => $this->queryLaporan()->where('status', 'Selesai')->latest()->get(),
         ]);
+    }
+
+    public function messages(): View
+    {
+        $penghuni = $this->penghuni();
+
+        return view('tenant.messages', [
+            'penghuni' => $penghuni,
+            'messages' => Pesan::query()
+                ->where('kos_id', $penghuni->kos_id)
+                ->where('penghuni_id', $penghuni->id)
+                ->oldest()
+                ->get(),
+            'broadcasts' => Broadcast::query()
+                ->where('kos_id', $penghuni->kos_id)
+                ->whereIn('target', ['Semua Penghuni', $penghuni->kamar?->lantai])
+                ->latest()
+                ->take(5)
+                ->get(),
+        ]);
+    }
+
+    public function sendMessage(Request $request): RedirectResponse
+    {
+        $penghuni = $this->penghuni();
+        $validated = $request->validate([
+            'pesan' => ['required', 'string', 'max:1000'],
+        ]);
+
+        Pesan::query()->create([
+            'kos_id' => $penghuni->kos_id,
+            'penghuni_id' => $penghuni->id,
+            'pengirim' => 'penghuni',
+            'pesan' => $validated['pesan'],
+        ]);
+
+        return back();
     }
 
     public function beriRating(Request $request, LaporanPerawatan $laporan): RedirectResponse

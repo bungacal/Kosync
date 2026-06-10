@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Broadcast;
 use App\Models\Kamar;
 use App\Models\Kos;
 use App\Models\LaporanPerawatan;
+use App\Models\Pesan;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -18,6 +20,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        Broadcast::query()->delete();
+        Pesan::query()->delete();
         LaporanPerawatan::query()->delete();
         Kamar::query()->delete();
         Kos::query()->delete();
@@ -74,7 +78,41 @@ class DatabaseSeeder extends Seeder
             'masalah' => 'Pintu kamar sudah diperbaiki',
             'kategori' => 'Pintu',
             'status' => 'Selesai',
+            'assign' => 'Pak Heru',
+            'estimasi' => 'Selesai kemarin',
             'selesai_pada' => now()->subDay(),
+        ]);
+
+        LaporanPerawatan::query()->create([
+            'kos_id' => $kos->id,
+            'penghuni_id' => $penghuni->id,
+            'kamar_id' => $kamar->get('101')->id,
+            'masalah' => 'Lampu kamar mati sejak pagi',
+            'kategori' => 'Listrik',
+            'status' => 'Diproses',
+            'assign' => 'Teknisi listrik',
+            'estimasi' => 'Besok pagi',
+        ]);
+
+        Pesan::query()->create([
+            'kos_id' => $kos->id,
+            'penghuni_id' => $penghuni->id,
+            'pengirim' => 'owner',
+            'pesan' => 'Halo, laporan lampu sudah kami terima ya.',
+        ]);
+
+        Pesan::query()->create([
+            'kos_id' => $kos->id,
+            'penghuni_id' => $penghuni->id,
+            'pengirim' => 'penghuni',
+            'pesan' => 'Terima kasih, kira-kira kapan bisa diperbaiki?',
+        ]);
+
+        Broadcast::query()->create([
+            'kos_id' => $kos->id,
+            'pesan' => 'Air akan mati sementara pukul 10.00 sampai 12.00 karena perbaikan pipa.',
+            'target' => 'Semua Penghuni',
+            'tanggal' => now()->translatedFormat('d F'),
         ]);
     }
 }

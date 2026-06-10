@@ -1,26 +1,64 @@
-<!doctype html>
-<html lang="id">
+@extends('layouts.owner')
 
-<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Kosync - Pemilik</title>
-		@vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@section('title', 'Dashboard Pemilik')
 
-<body>
-		<main class="simple-page">
-				<section class="panel compact-panel">
-						<p class="eyebrow">Pemilik Kos</p>
-						<h1>{{ $kos?->nama ?? 'Kos belum dibuat' }}</h1>
-						<p>Data pemilik sudah aktif. dashboard menyusul</p>
-						<p>Total kamar: <strong>{{ $kos?->kamar->count() ?? 0 }}</strong></p>
-						<form method="POST" action="{{ route('logout') }}">
-								@csrf
-								<button class="ghost-button" type="submit">Logout</button>
-						</form>
-				</section>
-		</main>
-</body>
+@php($page = 'home')
 
-</html>
+@section('content')
+  <section class="page active">
+    <div class="row-between panel">
+      <div>
+        <p class="eyebrow">Pemilik Kos</p>
+        <h2>{{ $kos?->nama ?? 'Kos belum dibuat' }}</h2>
+        <p class="muted">Kelola laporan, kamar, dan komunikasi penghuni dari satu tempat.</p>
+      </div>
+      <a class="primary-button" href="{{ route('pemilik.laporan') }}">Kelola Laporan</a>
+    </div>
+
+    <div class="stats-grid">
+      <article class="stat-card"><span>Total Kamar</span><strong>{{ $kos?->kamar->count() ?? 0 }}</strong><small>Unit kamar</small></article>
+      <article class="stat-card"><span>Kamar Terisi</span><strong>{{ $kos?->kamar->where('status', 'Terisi')->count() ?? 0 }}</strong><small>Penghuni aktif</small></article>
+      <article class="stat-card"><span>Laporan Aktif</span><strong>{{ $laporanAktif->count() }}</strong><small>Pending / Diproses</small></article>
+    </div>
+
+    <article class="panel">
+      <div class="panel-header">
+        <h2>Laporan Aktif</h2>
+        <a class="ghost-button" href="{{ route('pemilik.laporan') }}">Lihat Semua</a>
+      </div>
+      <div class="report-list">
+        @forelse ($laporanAktif->take(5) as $report)
+          <div class="report-row">
+            <div>
+              <h3>{{ $report->masalah }}</h3>
+              <p>{{ $report->penghuni?->name }} - Kamar {{ $report->kamar?->nomor }} - {{ $report->kategori }}</p>
+            </div>
+            <span class="status-pill {{ $report->status === 'Diproses' ? 'process' : 'pending' }}">{{ $report->status }}</span>
+          </div>
+        @empty
+          <div class="report-row"><div><h3>Belum ada laporan aktif</h3><p>Laporan penghuni akan tampil di sini.</p></div></div>
+        @endforelse
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-header">
+        <h2>Broadcast Terbaru</h2>
+        <a class="ghost-button" href="{{ route('pemilik.komunikasi') }}">Buka Komunikasi</a>
+      </div>
+      <div class="report-list">
+        @forelse ($broadcastTerbaru as $broadcast)
+          <div class="report-row">
+            <div>
+              <h3>{{ $broadcast->target }}</h3>
+              <p>{{ $broadcast->pesan }}</p>
+            </div>
+            <span class="status-pill">{{ $broadcast->tanggal }}</span>
+          </div>
+        @empty
+          <div class="report-row"><div><h3>Belum ada broadcast</h3><p>Pengumuman ke penghuni akan tampil di sini.</p></div></div>
+        @endforelse
+      </div>
+    </article>
+  </section>
+@endsection
