@@ -1,122 +1,115 @@
 <?php
 
-// app/Http/Controllers/KomunikasiController.php
-
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Penghuni;
-use App\Models\Pesan;
 use App\Models\Broadcast;
+use App\Models\Pesan;
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class KomunikasiController extends Controller
 {
-    /**
-     * Pilihan target broadcast.
-     */
-    private array $targetOptions = [
-        'Semua Penghuni',
-        'Lantai 1',
-        'Lantai 2',
-    ];
+    private array $targetOptions = ['Semua Penghuni', 'Lantai 1', 'Lantai 2'];
 
-    /**
-     * Halaman utama: daftar chat + form broadcast.
-     */
-    public function index()
+    public function index(): View
     {
-        // Ambil daftar penghuni beserta pesan terakhir
-        $chats = Penghuni::query()
-            ->withLastMessage()   // scope di Model Penghuni
-            ->orderByDesc('last_message_at')
-            ->get();
+        $kos = $this->kosPemilik();
+        $chats = $this->penghuniKos($kos->id)->get()->map(function (User $penghuni) use ($kos) {
+            $last = Pesan::query()
+                ->where('kos_id', $kos->id)
+                ->where('penghuni_id', $penghuni->id)
+                ->latest()
+                ->first();
 
-        // Riwayat broadcast terbaru
-        $riwayatBroadcast = Broadcast::latest()->take(10)->get();
+            $penghuni->last_message = $last?->pesan ?? 'Belum ada pesan.';
+            $penghuni->last_time = $last?->created_at?->format('H.i') ?? '-';
 
-        return view('komunikasi.index', [
-            'chats'            => $chats,
-            'riwayatBroadcast' => $riwayatBroadcast,
-            'targetOptions'    => $this->targetOptions,
-            'selectedTarget'   => 'Semua Penghuni',
+            return $penghuni;
+        });
+
+        return view('owner.komunikasi', [
+            'kos' => $kos,
+            'chats' => $chats,
+            'riwayatBroadcast' => Broadcast::query()->where('kos_id', $kos->id)->latest()->take(10)->get(),
+            'targetOptions' => $this->targetOptions,
+            'selectedTarget' => 'Semua Penghuni',
         ]);
     }
 
-    /**
-     * Halaman detail chat dengan satu penghuni.
-     */
-    public function show(int $penghuniId)
+    public function show(User $penghuni): View
     {
-        $penghuni = Penghuni::findOrFail($penghuniId);
+        $kos = $this->kosPemilik();
+        $this->abortUnlessPenghuniKos($penghuni, $kos->id);
 
-        $messages = Pesan::where('penghuni_id', $penghuniId)
-            ->orderBy('created_at')
-            ->get()
-            ->map(function ($msg) {
-                // Format waktu: "Kemarin 14:30" atau "HH:MM"
-                $msg->waktu = $this->formatWaktu($msg->created_at);
-                return $msg;
-            });
-
-        return view('komunikasi.show', compact('penghuni', 'messages'));
+        return view('owner.chat', [
+            'kos' => $kos,
+            'penghuni' => $penghuni->load('kamar'),
+            'messages' => Pesan::query()
+                ->where('kos_id', $kos->id)
+                ->where('penghuni_id', $penghuni->id)
+                ->oldest()
+                ->get(),
+        ]);
     }
 
-    /**
-     * Kirim pesan dari owner ke penghuni.
-     */
-    public function send(Request $request, int $penghuniId)
+    public function send(Request $request, User $penghuni): RedirectResponse
     {
-        $request->validate([
-            'pesan' => 'required|string|max:1000',
+        $kos = $this->kosPemilik();
+        $this->abortUnlessPenghuniKos($penghuni, $kos->id);
+
+        $validated = $request->validate([
+            'pesan' => ['required', 'string', 'max:1000'],
         ]);
 
-        Pesan::create([
-            'penghuni_id' => $penghuniId,
-            'pengirim'    => 'owner',
-            'pesan'       => $request->pesan,
+        Pesan::query()->create([
+            'kos_id' => $kos->id,
+            'penghuni_id' => $penghuni->id,
+            'pengirim' => 'owner',
+            'pesan' => $validated['pesan'],
         ]);
 
-        return redirect()->route('komunikasi.show', $penghuniId);
+        return back();
     }
 
-    /**
-     * Kirim broadcast ke semua / lantai tertentu.
-     */
-    public function broadcast(Request $request)
+    public function broadcast(Request $request): RedirectResponse
     {
-        $request->validate([
-            'pesan'  => 'required|string|max:1000',
-            'target' => 'required|string',
+        $kos = $this->kosPemilik();
+
+        $validated = $request->validate([
+            'pesan' => ['required', 'string', 'max:1000'],
+            'target' => ['required', 'string', 'max:100'],
         ]);
 
-        Broadcast::create([
-            'pesan'   => $request->pesan,
-            'target'  => $request->target,
-            'tanggal' => now()->translatedFormat('d F'),  // "01 Juni"
+        Broadcast::query()->create([
+            'kos_id' => $kos->id,
+            'pesan' => $validated['pesan'],
+            'target' => $validated['target'],
+            'tanggal' => now()->translatedFormat('d F'),
         ]);
 
-        // Jika ingin push notif ke penghuni, tambahkan logika di sini
-
-        return redirect()->route('komunikasi.index')
-                         ->with('success', 'Broadcast berhasil dikirim.');
+        return back()->with('status', 'Broadcast berhasil dikirim.');
     }
 
-    /**
-     * Format waktu pesan.
-     */
-    private function formatWaktu($datetime): string
+    private function kosPemilik()
     {
-        $now   = now();
-        $date  = \Carbon\Carbon::parse($datetime);
+        abort_unless(auth()->user()?->peran === 'pemilik', 403);
 
-        if ($date->isToday()) {
-            return 'Hari ini ' . $date->format('H:i');
-        }
+        return auth()->user()->kosMilik()->firstOrFail();
+    }
 
-        if ($date->isYesterday()) {
-            return 'Kemarin ' . $date->format('H:i');
-        }
+    private function penghuniKos(int $kosId)
+    {
+        return User::query()
+            ->where('peran', 'penghuni')
+            ->where('kos_id', $kosId)
+            ->with('kamar')
+            ->orderBy('name');
+    }
 
-        return $date->format('d M H:i');
+    private function abortUnlessPenghuniKos(User $penghuni, int $kosId): void
+    {
+        abort_unless($penghuni->peran === 'penghuni' && (int) $penghuni->kos_id === $kosId, 403);
     }
 }
