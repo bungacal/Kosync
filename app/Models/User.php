@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -45,5 +46,10 @@ class User extends Authenticatable
     public function kamar(): BelongsTo
     {
         return $this->belongsTo(Kamar::class);
+    }
+
+    public function pesanPenghuni(): HasMany
+    {
+        return $this->hasMany(Pesan::class, 'penghuni_id');
     }
 }

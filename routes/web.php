@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\KomunikasiController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PemilikController;
 use App\Http\Controllers\PenghuniController;
 use Illuminate\Support\Facades\Route;
@@ -27,9 +29,17 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/pemilik', [PemilikController::class, 'home'])->name('pemilik.home');
+    Route::get('/pemilik/laporan', [LaporanController::class, 'index'])->name('pemilik.laporan');
+    Route::patch('/pemilik/laporan/{laporan}', [LaporanController::class, 'update'])->name('pemilik.laporan.update');
+    Route::get('/pemilik/komunikasi', [KomunikasiController::class, 'index'])->name('pemilik.komunikasi');
+    Route::post('/pemilik/komunikasi/broadcast', [KomunikasiController::class, 'broadcast'])->name('pemilik.komunikasi.broadcast');
+    Route::get('/pemilik/komunikasi/{penghuni}', [KomunikasiController::class, 'show'])->name('pemilik.komunikasi.show');
+    Route::post('/pemilik/komunikasi/{penghuni}/send', [KomunikasiController::class, 'send'])->name('pemilik.komunikasi.send');
     Route::get('/beranda-penghuni', [PenghuniController::class, 'home'])->name('penghuni.home');
     Route::get('/laporan-saya', [PenghuniController::class, 'reports'])->name('penghuni.reports');
     Route::post('/laporan-saya', [PenghuniController::class, 'storeReport'])->name('penghuni.reports.store');
+    Route::get('/pesan-saya', [PenghuniController::class, 'messages'])->name('penghuni.messages');
+    Route::post('/pesan-saya', [PenghuniController::class, 'sendMessage'])->name('penghuni.messages.send');
     Route::get('/riwayat-laporan', [PenghuniController::class, 'history'])->name('penghuni.history');
     Route::post('/riwayat-laporan/{laporan}/rating', [PenghuniController::class, 'beriRating'])->name('penghuni.laporan.rating');
 });
