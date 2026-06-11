@@ -8,16 +8,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('kos', function (Blueprint $table) {
+        Schema::create('fasilitas_kos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pemilik_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->unsignedBigInteger('kos_id');
             $table->string('nama');
             $table->timestamps();
+
+            $table->foreign('kos_id')
+                  ->references('id')->on('kos')
+                  ->cascadeOnDelete();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('kos');
+        Schema::dropIfExists('fasilitas_kos');
     }
 };
