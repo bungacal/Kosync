@@ -5,6 +5,7 @@ use App\Http\Controllers\KomunikasiController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PemilikController;
 use App\Http\Controllers\PenghuniController;
+use App\Http\Controllers\KamarController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -42,4 +43,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/pesan-saya', [PenghuniController::class, 'sendMessage'])->name('penghuni.messages.send');
     Route::get('/riwayat-laporan', [PenghuniController::class, 'history'])->name('penghuni.history');
     Route::post('/riwayat-laporan/{laporan}/rating', [PenghuniController::class, 'beriRating'])->name('penghuni.laporan.rating');
+});
+Route::middleware(['auth'])->group(function () {
+    Route::get('/pemilik/daftar-kamar', [KamarController::class, 'daftarKamar'])
+         ->name('pemilik.daftar-kamar');
+    Route::get('/pemilik/denah-lantai', [KamarController::class, 'denahLantai'])
+         ->name('pemilik.denah-lantai');
+    Route::delete('/pemilik/kamar/{id}', [KamarController::class, 'destroy'])
+         ->name('pemilik.kamar.destroy');
 });

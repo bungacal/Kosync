@@ -1,0 +1,299 @@
+/* ══════════════════════════════
+   DAFTAR KAMAR
+══════════════════════════════ */
+
+.summary-chips {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 40px;
+    font-size: 12.5px;
+    font-weight: 600;
+    border: 1.5px solid transparent;
+}
+.chip-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.chip-total       { background: #f0e8e8; color: #422034; border-color: #ddc8cc; }
+.chip-total       .chip-dot { background: #422034; }
+.chip-terisi      { background: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; }
+.chip-terisi      .chip-dot { background: #66bb6a; }
+.chip-kosong      { background: #fff8e1; color: #b08000; border-color: #ffe082; }
+.chip-kosong      .chip-dot { background: #ffc107; }
+.chip-laporan     { background: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
+.chip-laporan     .chip-dot { background: #42a5f5; }
+.chip-maintenance { background: #fce4ec; color: #880e4f; border-color: #f8bbd0; }
+.chip-maintenance .chip-dot { background: #e91e63; }
+
+/* ── Toolbar ── */
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+.toolbar-left  { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.toolbar-right { display: flex; align-items: center; gap: 10px; }
+
+.search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.search-wrap svg {
+    position: absolute;
+    left: 12px;
+    width: 15px; height: 15px;
+    stroke: #999; fill: none;
+    stroke-width: 1.8; stroke-linecap: round;
+}
+.search-input {
+    padding: 9px 14px 9px 36px;
+    border: 1.5px solid #e8e0d8;
+    border-radius: 10px;
+    background: #fff;
+    font-size: 13px;
+    font-family: inherit;
+    color: #1a1a1a;
+    width: 220px;
+    outline: none;
+    transition: border-color .15s;
+}
+.search-input:focus { border-color: #a06080; }
+.search-input::placeholder { color: #999; }
+
+.filter-select {
+    padding: 9px 36px 9px 14px;
+    border: 1.5px solid #e8e0d8;
+    border-radius: 10px;
+    background: #fff;
+    font-size: 13px;
+    font-family: inherit;
+    color: #1a1a1a;
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    transition: border-color .15s;
+}
+.filter-select:focus { border-color: #a06080; }
+
+.btn-add {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    background: #422034;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .15s;
+    white-space: nowrap;
+}
+.btn-add:hover { background: #5a2742; }
+.btn-add svg {
+    width: 14px; height: 14px;
+    stroke: #fff; fill: none;
+    stroke-width: 2.2; stroke-linecap: round;
+}
+
+/* ── Table ── */
+.table-card {
+    background: #fff;
+    border: 1.5px solid #e8e0d8;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(66,32,52,0.07);
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+thead tr { background: #3D1A2E; }
+thead th {
+    padding: 15px 20px;
+    text-align: left;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: rgba(237,212,208,0.85);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+tbody tr {
+    border-bottom: 1px solid #f0ebe4;
+    transition: background .15s;
+}
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #fdf8f5; }
+tbody td {
+    padding: 16px 20px;
+    font-size: 13.5px;
+    color: #1a1a1a;
+    vertical-align: middle;
+}
+
+.penghuni-cell { display: flex; align-items: center; gap: 10px; }
+.penghuni-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    flex-shrink: 0;
+}
+.penghuni-name  { font-weight: 600; font-size: 13.5px; }
+.penghuni-empty { color: #999; font-style: italic; font-size: 13px; }
+
+.kamar-num {
+    font-weight: 700;
+    font-size: 15px;
+    color: #422034;
+    font-family: inherit;
+}
+.lantai-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: #f0e8ee;
+    color: #5a2742;
+    font-size: 12px;
+    font-weight: 600;
+}
+.harga { font-weight: 600; }
+.harga span { font-size: 11px; color: #999; font-weight: 400; }
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.status-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.badge-terisi         { background: #e8f5e9; color: #2e7d32; }
+.badge-terisi::before { background: #66bb6a; }
+.badge-kosong         { background: #fff8e1; color: #b08000; }
+.badge-kosong::before { background: #ffc107; }
+.badge-laporan        { background: #e3f2fd; color: #1565c0; }
+.badge-laporan::before { background: #42a5f5; }
+.badge-maintenance         { background: #fce4ec; color: #880e4f; }
+.badge-maintenance::before { background: #e91e63; }
+
+.action-cell { display: flex; gap: 8px; align-items: center; }
+.btn-detail {
+    padding: 6px 16px;
+    border: 1.5px solid #e8e0d8;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 12.5px;
+    font-weight: 600;
+    font-family: inherit;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+}
+.btn-detail:hover { border-color: #422034; color: #422034; background: #fdf5f8; }
+
+.btn-icon {
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    border: 1.5px solid #e8e0d8;
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all .15s;
+}
+.btn-icon:hover { border-color: #e53935; background: #fff5f5; }
+.btn-icon svg {
+    width: 13px; height: 13px;
+    stroke: #999; fill: none;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+.btn-icon:hover svg { stroke: #e53935; }
+
+/* ── Empty state ── */
+.empty-state {
+    padding: 60px 20px;
+    text-align: center;
+    color: #999;
+}
+.empty-state svg {
+    width: 40px; height: 40px;
+    stroke: #ddd; fill: none;
+    stroke-width: 1.5;
+    margin-bottom: 12px;
+    display: block;
+    margin-inline: auto;
+}
+.empty-state p { font-size: 14px; }
+
+/* ── Pagination ── */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-top: 1px solid #e8e0d8;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.pagination-info { font-size: 12.5px; color: #999; }
+.pagination-btns { display: flex; gap: 6px; }
+.pg-btn {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: 1.5px solid #e8e0d8;
+    background: #fff;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 600;
+    color: #1a1a1a;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+}
+.pg-btn:hover { border-color: #422034; color: #422034; }
+.pg-btn.active { background: #422034; border-color: #422034; color: #fff; }
+.pg-btn svg {
+    width: 13px; height: 13px;
+    stroke: currentColor; fill: none;
+    stroke-width: 2.2; stroke-linecap: round;
+}
+
+@media (max-width: 900px) {
+    .toolbar { flex-direction: column; align-items: flex-start; }
+    .toolbar-right { width: 100%; }
+    .btn-add { width: 100%; justify-content: center; }
+    .search-input { width: 100%; }
+}
+@media (max-width: 600px) {
+    .summary-chips { gap: 7px; }
+    .chip { font-size: 11.5px; padding: 6px 12px; }
+}
