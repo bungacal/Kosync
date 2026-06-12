@@ -7,9 +7,12 @@ use App\Models\Kos;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class AuthController extends Controller
@@ -21,11 +24,19 @@ class AuthController extends Controller
 
     public function login(Request $request): RedirectResponse
     {
-        $credentials = $request->validate([
+        $this->normalizeEmail($request);
+
+        $validated = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
             'peran' => ['required', Rule::in(['pemilik', 'penghuni'])],
         ]);
+
+        $credentials = [
+            'email' => Str::lower($validated['email']),
+            'password' => $validated['password'],
+            'peran' => $validated['peran'],
+        ];
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             return back()
@@ -35,7 +46,7 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended($this->homeRoute());
+        return redirect()->route($this->homeRouteName(Auth::user()));
     }
 
     public function showPenghuniSignup(): View
@@ -47,27 +58,30 @@ class AuthController extends Controller
 
     public function signupPenghuni(Request $request): RedirectResponse
     {
+        $this->normalizeEmail($request);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:6'],
+            'password' => ['required', 'string', Password::min(6)],
             'kos_id' => ['required', 'exists:kos,id'],
             'kamar_id' => ['required', 'exists:kamar,id'],
         ]);
 
-        $kamar = Kamar::query()
-            ->whereKey($validated['kamar_id'])
-            ->where('kos_id', $validated['kos_id'])
-            ->where('status', 'Kosong')
-            ->first();
+        $user = DB::transaction(function () use ($validated) {
+            $kamar = Kamar::query()
+                ->whereKey($validated['kamar_id'])
+                ->where('kos_id', $validated['kos_id'])
+                ->where('status', 'Kosong')
+                ->lockForUpdate()
+                ->first();
 
-        if (! $kamar) {
-            return back()
-                ->withErrors(['kamar_id' => 'Kamar tidak tersedia.'])
-                ->withInput();
-        }
+            if (! $kamar) {
+                throw ValidationException::withMessages([
+                    'kamar_id' => 'Kamar tidak tersedia.',
+                ]);
+            }
 
-        $user = DB::transaction(function () use ($validated, $kamar) {
             $user = User::query()->create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
@@ -98,10 +112,12 @@ class AuthController extends Controller
 
     public function signupPemilik(Request $request): RedirectResponse
     {
+        $this->normalizeEmail($request);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:6'],
+            'password' => ['required', 'string', Password::min(6)],
             'kos_name' => ['required', 'string', 'max:255'],
         ]);
 
@@ -139,10 +155,19 @@ class AuthController extends Controller
         return redirect()->route('login');
     }
 
-    private function homeRoute(): string
+    private function homeRouteName(?User $user): string
     {
-        return Auth::user()?->peran === 'pemilik'
-            ? route('pemilik.home')
-            : route('penghuni.home');
+        return $user?->peran === 'pemilik'
+            ? 'pemilik.home'
+            : 'penghuni.home';
+    }
+
+    private function normalizeEmail(Request $request): void
+    {
+        if ($request->filled('email')) {
+            $request->merge([
+                'email' => Str::lower((string) $request->input('email')),
+            ]);
+        }
     }
 }
