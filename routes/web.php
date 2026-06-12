@@ -16,6 +16,9 @@ Route::get('/', function () {
         ? redirect()->route('pemilik.home')
         : redirect()->route('penghuni.home');
 });
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
