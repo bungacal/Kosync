@@ -96,7 +96,7 @@ class AuthController extends Controller
                 'status' => 'Terisi',
             ]);
 
-            return $user;
+            return redirect()->route('login')->with('success', 'Akun berhasil dibuat, silakan login.');
         });
 
         Auth::login($user);

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['kos_id', 'pesan', 'target', 'tanggal'])]
+#[Fillable(['kos_id', 'pemilik_id', 'pesan', 'target', 'tanggal'])]
 class Broadcast extends Model
 {
     protected $table = 'broadcast';

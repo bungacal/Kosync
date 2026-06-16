@@ -84,6 +84,7 @@ class KomunikasiController extends Controller
 
         Broadcast::query()->create([
             'kos_id' => $kos->id,
+            'pemilik_id' => auth()->id(),
             'pesan' => $validated['pesan'],
             'target' => $validated['target'],
             'tanggal' => now()->translatedFormat('d F'),
