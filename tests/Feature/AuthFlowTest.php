@@ -33,6 +33,48 @@ class AuthFlowTest extends TestCase
         $this->assertTrue($kos->is($owner->kos));
     }
 
+    public function test_owner_can_claim_an_existing_kos_without_an_owner(): void
+    {
+        $kos = Kos::query()->create(['nama' => 'Kos Pakis 77']);
+
+        $response = $this->post(route('register.pemilik.store'), [
+            'name' => 'Dina Pemilik',
+            'email' => 'dina@example.com',
+            'password' => 'secret123',
+            'kos_name' => ' Kos Pakis 77 ',
+        ]);
+
+        $owner = User::query()->where('email', 'dina@example.com')->firstOrFail();
+
+        $response->assertRedirect(route('pemilik.home'));
+        $this->assertAuthenticatedAs($owner);
+        $this->assertTrue($kos->fresh()->pemilik->is($owner));
+        $this->assertTrue($owner->kos->is($kos));
+        $this->assertSame(1, Kos::query()->where('nama', 'Kos Pakis 77')->count());
+    }
+
+    public function test_owner_cannot_sign_up_for_a_kos_that_already_has_an_owner(): void
+    {
+        [$kos] = $this->availableRoom();
+
+        $response = $this
+            ->from(route('register.pemilik'))
+            ->post(route('register.pemilik.store'), [
+                'name' => 'Eka Pemilik',
+                'email' => 'eka@example.com',
+                'password' => 'secret123',
+                'kos_name' => strtolower($kos->nama),
+            ]);
+
+        $response
+            ->assertRedirect(route('register.pemilik'))
+            ->assertSessionHasErrors('kos_name');
+
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['email' => 'eka@example.com']);
+        $this->assertSame(1, Kos::query()->whereRaw('LOWER(nama) = ?', [strtolower($kos->nama)])->count());
+    }
+
     public function test_tenant_can_sign_up_with_an_available_room(): void
     {
         [$kos, $room] = $this->availableRoom();

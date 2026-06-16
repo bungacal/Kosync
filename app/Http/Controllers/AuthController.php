@@ -117,6 +117,7 @@ class AuthController extends Controller
     public function signupPemilik(Request $request): RedirectResponse
     {
         $this->normalizeEmail($request);
+        $this->normalizeKosName($request);
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -126,6 +127,17 @@ class AuthController extends Controller
         ]);
 
         $user = DB::transaction(function () use ($validated) {
+            $kos = Kos::query()
+                ->whereRaw('LOWER(nama) = ?', [Str::lower($validated['kos_name'])])
+                ->lockForUpdate()
+                ->first();
+
+            if ($kos?->pemilik_id) {
+                throw ValidationException::withMessages([
+                    'kos_name' => 'Kos ini sudah memiliki akun pemilik.',
+                ]);
+            }
+
             $user = User::query()->create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
@@ -133,11 +145,12 @@ class AuthController extends Controller
                 'peran' => 'pemilik',
             ]);
 
-            $kos = Kos::query()->create([
+            $kos ??= Kos::query()->create([
                 'pemilik_id' => $user->id,
                 'nama' => $validated['kos_name'],
             ]);
 
+            $kos->update(['pemilik_id' => $user->id]);
             $user->update(['kos_id' => $kos->id]);
 
             return $user;
@@ -171,6 +184,15 @@ class AuthController extends Controller
         if ($request->filled('email')) {
             $request->merge([
                 'email' => Str::lower((string) $request->input('email')),
+            ]);
+        }
+    }
+
+    private function normalizeKosName(Request $request): void
+    {
+        if ($request->filled('kos_name')) {
+            $request->merge([
+                'kos_name' => preg_replace('/\s+/', ' ', trim((string) $request->input('kos_name'))),
             ]);
         }
     }
