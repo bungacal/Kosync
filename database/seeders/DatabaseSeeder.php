@@ -27,6 +27,9 @@ class DatabaseSeeder extends Seeder
         Kos::query()->delete();
         User::query()->delete();
 
+        $kosList = $this->seedPublicKos();
+        $kos = $kosList->get('Kos Putri Muslim 2');
+
         $pemilik = User::query()->create([
             'name' => 'Sarah Pemilik Kos',
             'email' => 'admin@gmail.com',
@@ -34,28 +37,10 @@ class DatabaseSeeder extends Seeder
             'peran' => 'pemilik',
         ]);
 
-        $kos = Kos::query()->create([
-            'pemilik_id' => $pemilik->id,
-            'nama' => 'Kos Kencana',
-        ]);
-
+        $kos->update(['pemilik_id' => $pemilik->id]);
         $pemilik->update(['kos_id' => $kos->id]);
 
-        $kamar = collect([
-            ['nomor' => '101', 'lantai' => 'Lantai 1'],
-            ['nomor' => '102', 'lantai' => 'Lantai 1'],
-            ['nomor' => '103', 'lantai' => 'Lantai 1'],
-            ['nomor' => '104', 'lantai' => 'Lantai 1'],
-            ['nomor' => '201', 'lantai' => 'Lantai 2'],
-            ['nomor' => '202', 'lantai' => 'Lantai 2'],
-            ['nomor' => '203', 'lantai' => 'Lantai 2'],
-            ['nomor' => '204', 'lantai' => 'Lantai 2'],
-        ])->map(fn (array $kamar) => Kamar::query()->create([
-            'kos_id' => $kos->id,
-            'nomor' => $kamar['nomor'],
-            'lantai' => $kamar['lantai'],
-            'status' => 'Kosong',
-        ]))->keyBy('nomor');
+        $kamar = $kos->kamar()->get()->keyBy('nomor');
 
         $penghuni = User::query()->create([
             'name' => 'Nama Penghuni Kos',
@@ -114,5 +99,71 @@ class DatabaseSeeder extends Seeder
             'target' => 'Semua Penghuni',
             'tanggal' => now()->translatedFormat('d F'),
         ]);
+    }
+
+    private function seedPublicKos()
+    {
+        $kosData = [
+            'Kos Putri Muslim 2' => [
+                range(314, 323),
+                range(101, 102),
+                range(201, 213),
+            ],
+            'Kos Putri Muslim 1' => [
+                range(301, 302),
+                range(101, 122),
+                range(223, 243),
+            ],
+            'Kos Pakis 77' => [
+                [101, 102, 103, 104, 105, 106, 107, 201, 202, 203],
+            ],
+            'Kos Wisper 35' => [
+                range(1, 12),
+            ],
+            'Kos Pramashinta' => [
+                range(1, 18),
+            ],
+        ];
+
+        $createdKos = collect();
+
+        foreach ($kosData as $nama => $groups) {
+            $kos = Kos::query()->create(['nama' => $nama]);
+
+            $rooms = collect($groups)
+                ->flatten()
+                ->unique()
+                ->sort()
+                ->map(fn ($nomor) => [
+                    'nomor' => (string) $nomor,
+                    'lantai' => $this->lantaiFor($nomor),
+                ])
+                ->values()
+                ->all();
+
+            $this->createRooms($kos, $rooms);
+            $createdKos->put($nama, $kos);
+        }
+
+        return $createdKos;
+    }
+
+    private function createRooms(Kos $kos, array $rooms)
+    {
+        return collect($rooms)->map(fn (array $kamar) => Kamar::query()->create([
+            'kos_id' => $kos->id,
+            'nomor' => $kamar['nomor'],
+            'lantai' => $kamar['lantai'],
+            'status' => 'Kosong',
+        ]))->keyBy('nomor');
+    }
+
+    private function lantaiFor(int|string $nomor): string
+    {
+        $nomor = (string) $nomor;
+
+        return strlen($nomor) >= 3
+            ? 'Lantai ' . (int) substr($nomor, 0, 1)
+            : 'Lantai 1';
     }
 }
