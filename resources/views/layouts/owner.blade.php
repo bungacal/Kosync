@@ -7,6 +7,7 @@
     <meta name="theme-color" content="#4b2038" />
     <link rel="icon" href="{{ asset('kosync-logo.jpeg') }}" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   </head>
   <body data-role="pemilik" data-page="{{ $page ?? 'home' }}">
@@ -20,6 +21,7 @@
         <nav class="nav-section" aria-label="Menu pemilik">
           <p>Utama</p>
           <a class="nav-item visible {{ $page === 'home' ? 'active' : '' }}" href="{{ route('pemilik.home') }}"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a>
+          <a class="nav-item visible {{ in_array($page, ['daftar-kamar', 'denah-lantai'], true) ? 'active' : '' }}" href="{{ route('pemilik.daftar-kamar') }}"><i data-lucide="building-2"></i><span>Manajemen Kos</span></a>
           <a class="nav-item visible {{ $page === 'laporan' ? 'active' : '' }}" href="{{ route('pemilik.laporan') }}"><i data-lucide="clipboard-list"></i><span>Laporan</span></a>
 
           {{-- Manajemen Kos dengan submenu --}}

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KomunikasiController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PemilikController;

@@ -52,7 +52,11 @@ class AuthController extends Controller
     public function showPenghuniSignup(): View
     {
         return view('auth.signup-tenant', [
-            'kosList' => Kos::query()->with(['kamar' => fn ($query) => $query->where('status', 'Kosong')->orderBy('nomor')])->orderBy('nama')->get(),
+            'kosList' => Kos::query()
+                ->whereHas('kamar', fn ($query) => $query->where('status', 'Kosong'))
+                ->with(['kamar' => fn ($query) => $query->where('status', 'Kosong')->orderBy('nomor')])
+                ->orderBy('nama')
+                ->get(),
         ]);
     }
 
