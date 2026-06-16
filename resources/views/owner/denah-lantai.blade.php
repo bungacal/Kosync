@@ -57,22 +57,23 @@
                     <div class="rooms-grid">
                         @foreach($kamarList as $kamar)
                             @php
-                                $statusClass = match($kamar->status) {
+                                $status = $kamar->status_tampilan;
+                                $statusClass = match($status) {
                                     'terisi'      => 'terisi',
                                     'kosong'      => 'kosong',
                                     'maintenance' => 'maintenance',
                                     'laporan'     => 'notif',
                                     default       => 'kosong',
                                 };
-                                $hasBadge = in_array($kamar->status, ['maintenance', 'laporan']);
-                                $tenant   = $kamar->penghuni ?? 'Kosong';
+                                $hasBadge = in_array($status, ['maintenance', 'laporan']);
+                                $tenant   = $kamar->penghuni_nama ?? 'Kosong';
                             @endphp
                             <div class="room-card {{ $statusClass }}"
                                  data-room="{{ $kamar->id }}">
                                 @if($hasBadge)
                                     <div class="room-badge"></div>
                                 @endif
-                                <div class="room-number">{{ $kamar->nomor_kamar }}</div>
+                                <div class="room-number">{{ $kamar->nomor }}</div>
                                 <div class="room-tenant">{{ $tenant }}</div>
                             </div>
                         @endforeach
