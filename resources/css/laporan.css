@@ -137,6 +137,27 @@ body {
     color: #fff;
 }
 
+.nav-submenu {
+    display: none;
+    flex-direction: column;
+    padding-left: 42px;
+    margin-top: 2px;
+    gap: 2px;
+}
+.nav-submenu.open { display: flex; }
+
+.nav-sublink {
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,.55);
+    text-decoration: none;
+    transition: background .15s, color .15s;
+}
+.nav-sublink:hover { background: rgba(255,255,255,.07); color: #fff; }
+.nav-sublink.active { color: #fff; background: rgba(255,255,255,.1); }
+
 /* Sidebar footer */
 .sidebar-footer {
     padding: 16px;
