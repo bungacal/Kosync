@@ -40,23 +40,7 @@ class DatabaseSeeder extends Seeder
         $kos->update(['pemilik_id' => $pemilik->id]);
         $pemilik->update(['kos_id' => $kos->id]);
 
-<<<<<<< HEAD
-        $kamar = $this->createRooms($kos, [
-            ['nomor' => '101', 'lantai' => 'Lantai 1'],
-            ['nomor' => '102', 'lantai' => 'Lantai 1'],
-            ['nomor' => '103', 'lantai' => 'Lantai 1'],
-            ['nomor' => '104', 'lantai' => 'Lantai 1'],
-            ['nomor' => '201', 'lantai' => 'Lantai 2'],
-            ['nomor' => '202', 'lantai' => 'Lantai 2'],
-            ['nomor' => '203', 'lantai' => 'Lantai 2'],
-            ['nomor' => '204', 'lantai' => 'Lantai 2'],
-        ]);
-
-        $this->seedPublicKos();
-=======
         $kamar = $kos->kamar()->get()->keyBy('nomor');
->>>>>>> 7771b55980e35efd08ec0de491e803f114f12c22
-
         $penghuni = User::query()->create([
             'name' => 'Nama Penghuni Kos',
             'email' => 'user@gmail.com',
@@ -116,11 +100,7 @@ class DatabaseSeeder extends Seeder
         ]);
     }
 
-<<<<<<< HEAD
-    private function seedPublicKos(): void
-=======
     private function seedPublicKos()
->>>>>>> 7771b55980e35efd08ec0de491e803f114f12c22
     {
         $kosData = [
             'Kos Putri Muslim 2' => [
@@ -144,11 +124,8 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
-<<<<<<< HEAD
-=======
         $createdKos = collect();
 
->>>>>>> 7771b55980e35efd08ec0de491e803f114f12c22
         foreach ($kosData as $nama => $groups) {
             $kos = Kos::query()->create(['nama' => $nama]);
 
@@ -164,14 +141,10 @@ class DatabaseSeeder extends Seeder
                 ->all();
 
             $this->createRooms($kos, $rooms);
-<<<<<<< HEAD
-        }
-=======
             $createdKos->put($nama, $kos);
         }
 
         return $createdKos;
->>>>>>> 7771b55980e35efd08ec0de491e803f114f12c22
     }
 
     private function createRooms(Kos $kos, array $rooms)

@@ -19,28 +19,33 @@
         </a>
 
         <nav class="nav-section" aria-label="Menu pemilik">
-          <p>Utama</p>
-          <a class="nav-item visible {{ $page === 'home' ? 'active' : '' }}" href="{{ route('pemilik.home') }}"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></a>
-          <a class="nav-item visible {{ in_array($page, ['daftar-kamar', 'denah-lantai'], true) ? 'active' : '' }}" href="{{ route('pemilik.daftar-kamar') }}"><i data-lucide="building-2"></i><span>Manajemen Kos</span></a>
-          <a class="nav-item visible {{ $page === 'laporan' ? 'active' : '' }}" href="{{ route('pemilik.laporan') }}"><i data-lucide="clipboard-list"></i><span>Laporan</span></a>
+            <p>Utama</p>
+            <a class="nav-item visible {{ $page === 'home' ? 'active' : '' }}" href="{{ route('pemilik.home') }}">
+                <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
+            </a>
+            <a class="nav-item visible {{ $page === 'laporan' ? 'active' : '' }}" href="{{ route('pemilik.laporan') }}">
+                <i data-lucide="clipboard-list"></i><span>Laporan</span>
+            </a>
 
-          {{-- Manajemen Kos dengan submenu --}}
-          <div class="nav-group">
-              <a class="nav-item visible {{ in_array($page, ['denah-lantai','daftar-kamar']) ? 'active' : '' }}"
-                href="#" onclick="toggleSubmenu(event)">
-                  <i data-lucide="building-2"></i>
-                  <span>Manajemen Kos</span>
-                  <i data-lucide="chevron-down" class="chevron"></i>
-              </a>
-              <div class="nav-submenu {{ in_array($page, ['denah-lantai','daftar-kamar']) ? 'open' : '' }}">
-                  <a class="nav-subitem {{ $page === 'denah-lantai' ? 'active' : '' }}"
-                    href="{{ route('pemilik.denah-lantai') }}">Denah Lantai</a>
-                  <a class="nav-subitem {{ $page === 'daftar-kamar' ? 'active' : '' }}"
-                    href="{{ route('pemilik.daftar-kamar') }}">Daftar Kamar</a>
-              </div>
-          </div>
+            <p>Kelola</p>
+            <div class="nav-group">
+                <a class="nav-item visible {{ in_array($page, ['denah-lantai','daftar-kamar']) ? 'active' : '' }}"
+                  href="#" onclick="toggleSubmenu(event)">
+                    <i data-lucide="building-2"></i>
+                    <span>Manajemen Kos</span>
+                    <i data-lucide="chevron-down" class="chevron"></i>
+                </a>
+                <div class="nav-submenu {{ in_array($page, ['denah-lantai','daftar-kamar']) ? 'open' : '' }}">
+                    <a class="nav-subitem {{ $page === 'denah-lantai' ? 'active' : '' }}"
+                      href="{{ route('pemilik.denah-lantai') }}">Denah Lantai</a>
+                    <a class="nav-subitem {{ $page === 'daftar-kamar' ? 'active' : '' }}"
+                      href="{{ route('pemilik.daftar-kamar') }}">Daftar Kamar</a>
+                </div>
+            </div>
 
-          <a class="nav-item visible {{ $page === 'komunikasi' ? 'active' : '' }}" href="{{ route('pemilik.komunikasi') }}"><i data-lucide="messages-square"></i><span>Komunikasi</span></a>
+            <a class="nav-item visible {{ $page === 'komunikasi' ? 'active' : '' }}" href="{{ route('pemilik.komunikasi') }}">
+                <i data-lucide="messages-square"></i><span>Komunikasi</span>
+            </a>
         </nav>
 
         <div class="sidebar-user">
