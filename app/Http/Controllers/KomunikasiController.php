@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Broadcast;
+use App\Models\NotifikasiPenghuni;
 use App\Models\Pesan;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -82,13 +83,32 @@ class KomunikasiController extends Controller
             'target' => ['required', 'string', 'max:100'],
         ]);
 
-        Broadcast::query()->create([
+        $broadcast = Broadcast::query()->create([
             'kos_id' => $kos->id,
             'pemilik_id' => auth()->id(),
             'pesan' => $validated['pesan'],
             'target' => $validated['target'],
             'tanggal' => now()->translatedFormat('d F'),
         ]);
+
+        $targets = $this->penghuniKos($kos->id);
+
+        if ($validated['target'] !== 'Semua Penghuni') {
+            $targets->whereHas('kamar', fn ($query) => $query->where('lantai', $validated['target']));
+        }
+
+        $targets->get()->each(function (User $penghuni) use ($broadcast) {
+            NotifikasiPenghuni::query()->create([
+                'user_id' => $penghuni->id,
+                'broadcast_id' => $broadcast->id,
+                'tipe' => 'broadcast',
+                'ikon' => 'megaphone',
+                'warna' => 'blue',
+                'judul' => 'Pengumuman: '.$broadcast->pesan,
+                'isi' => $broadcast->tanggal.' ada pengumuman untuk '.$broadcast->target.'.',
+                'url' => route('penghuni.messages'),
+            ]);
+        });
 
         return back()->with('status', 'Broadcast berhasil dikirim.');
     }

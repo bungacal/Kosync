@@ -52,4 +52,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Pesan::class, 'penghuni_id');
     }
+
+    public function notifikasiPenghuni(): HasMany
+    {
+        return $this->hasMany(NotifikasiPenghuni::class, 'user_id');
+    }
 }

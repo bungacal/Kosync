@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Broadcast;
 use App\Models\LaporanPerawatan;
+use App\Models\NotifikasiPenghuni;
 use App\Models\Pesan;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -145,13 +146,41 @@ class PenghuniController extends Controller
 
         $validated = $request->validate([
             'nilai_rating' => ['required', 'integer', 'min:1', 'max:5'],
+            'ulasan_rating' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $laporan->update(['nilai_rating' => $validated['nilai_rating']]);
+        $laporan->update([
+            'nilai_rating' => $validated['nilai_rating'],
+            'ulasan_rating' => $validated['ulasan_rating'] ?? null,
+            'rated_at' => now(),
+        ]);
+
+        NotifikasiPenghuni::query()->create([
+            'user_id' => $penghuni->id,
+            'laporan_perawatan_id' => $laporan->id,
+            'tipe' => 'rating_diterima',
+            'ikon' => 'star',
+            'warna' => 'green',
+            'judul' => 'Terima kasih! Rating Anda sudah kami terima',
+            'isi' => 'Kami akan terus meningkatkan kualitas layanan kami.',
+            'url' => route('penghuni.history'),
+        ]);
 
         return redirect()
             ->route('penghuni.history')
-            ->with('status', 'Rating berhasil dikirim.');
+            ->with('status', 'Rating dan ulasan berhasil dikirim.');
+    }
+
+    public function markNotificationsRead(): RedirectResponse
+    {
+        $penghuni = $this->penghuni();
+
+        NotifikasiPenghuni::query()
+            ->where('user_id', $penghuni->id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        return back()->with('status', 'Semua notifikasi ditandai sudah dibaca.');
     }
 
     private function penghuni(): User

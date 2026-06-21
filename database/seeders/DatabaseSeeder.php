@@ -6,6 +6,7 @@ use App\Models\Broadcast;
 use App\Models\Kamar;
 use App\Models\Kos;
 use App\Models\LaporanPerawatan;
+use App\Models\NotifikasiPenghuni;
 use App\Models\Pesan;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -20,6 +21,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        NotifikasiPenghuni::query()->delete();
         Broadcast::query()->delete();
         Pesan::query()->delete();
         LaporanPerawatan::query()->delete();
@@ -55,7 +57,7 @@ class DatabaseSeeder extends Seeder
             'status' => 'Terisi',
         ]);
 
-        LaporanPerawatan::query()->create([
+        $laporanSelesai = LaporanPerawatan::query()->create([
             'kos_id' => $kos->id,
             'penghuni_id' => $penghuni->id,
             'kamar_id' => $kamar->get('101')->id,
@@ -67,7 +69,7 @@ class DatabaseSeeder extends Seeder
             'selesai_pada' => now()->subDay(),
         ]);
 
-        LaporanPerawatan::query()->create([
+        $laporanDiproses = LaporanPerawatan::query()->create([
             'kos_id' => $kos->id,
             'penghuni_id' => $penghuni->id,
             'kamar_id' => $kamar->get('101')->id,
@@ -92,11 +94,44 @@ class DatabaseSeeder extends Seeder
             'pesan' => 'Terima kasih, kira-kira kapan bisa diperbaiki?',
         ]);
 
-        Broadcast::query()->create([
+        $broadcast = Broadcast::query()->create([
             'kos_id' => $kos->id,
             'pesan' => 'Air akan mati sementara pukul 10.00 sampai 12.00 karena perbaikan pipa.',
             'target' => 'Semua Penghuni',
             'tanggal' => now()->translatedFormat('d F'),
+        ]);
+
+        NotifikasiPenghuni::query()->create([
+            'user_id' => $penghuni->id,
+            'laporan_perawatan_id' => $laporanDiproses->id,
+            'tipe' => 'laporan_diproses',
+            'ikon' => 'wrench',
+            'warna' => 'green',
+            'judul' => 'Laporan lampu kamar 101 sedang diproses',
+            'isi' => 'Estimasi selesai: Besok pagi.',
+            'url' => route('penghuni.reports'),
+        ]);
+
+        NotifikasiPenghuni::query()->create([
+            'user_id' => $penghuni->id,
+            'laporan_perawatan_id' => $laporanSelesai->id,
+            'tipe' => 'laporan_selesai',
+            'ikon' => 'check',
+            'warna' => 'amber',
+            'judul' => 'Laporan pintu kamar 101 telah selesai',
+            'isi' => 'Silakan beri rating atas perbaikan yang telah dilakukan.',
+            'url' => route('penghuni.history', ['rating' => $laporanSelesai->id]),
+        ]);
+
+        NotifikasiPenghuni::query()->create([
+            'user_id' => $penghuni->id,
+            'broadcast_id' => $broadcast->id,
+            'tipe' => 'broadcast',
+            'ikon' => 'megaphone',
+            'warna' => 'blue',
+            'judul' => 'Pengumuman: Air mati jam 10.00 - 12.00',
+            'isi' => 'Ada perbaikan pipa utama hari ini.',
+            'url' => route('penghuni.messages'),
         ]);
     }
 

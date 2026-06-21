@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['kos_id', 'penghuni_id', 'kamar_id', 'masalah', 'kategori', 'status', 'assign', 'estimasi', 'nilai_rating', 'selesai_pada'])]
+#[Fillable(['kos_id', 'penghuni_id', 'kamar_id', 'masalah', 'kategori', 'status', 'assign', 'estimasi', 'nilai_rating', 'ulasan_rating', 'rated_at', 'selesai_pada'])]
 class LaporanPerawatan extends Model
 {
     protected $table = 'laporan_perawatan';
@@ -14,6 +14,7 @@ class LaporanPerawatan extends Model
     protected function casts(): array
     {
         return [
+            'rated_at' => 'datetime',
             'selesai_pada' => 'datetime',
         ];
     }

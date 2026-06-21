@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/pesan-saya', [PenghuniController::class, 'sendMessage'])->name('penghuni.messages.send');
     Route::get('/riwayat-laporan', [PenghuniController::class, 'history'])->name('penghuni.history');
     Route::post('/riwayat-laporan/{laporan}/rating', [PenghuniController::class, 'beriRating'])->name('penghuni.laporan.rating');
+    Route::post('/notifikasi-saya/dibaca', [PenghuniController::class, 'markNotificationsRead'])->name('penghuni.notifications.read');
 });
 Route::middleware(['auth'])->group(function () {
     Route::get('/pemilik/daftar-kamar', [KamarController::class, 'daftarKamar'])

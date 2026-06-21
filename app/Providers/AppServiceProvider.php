@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\LaporanPerawatan;
+use App\Models\NotifikasiPenghuni;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
@@ -46,6 +47,41 @@ class AppServiceProvider extends ServiceProvider
             }
 
             $view->with('ownerNotifications', $notifications);
+        });
+
+        View::composer('layouts.tenant', function ($view) {
+            $user = Auth::user();
+            $notifications = collect();
+            $unreadCount = 0;
+            $pendingRatingReport = null;
+
+            if ($user?->peran === 'penghuni') {
+                $notifications = NotifikasiPenghuni::query()
+                    ->with(['laporan.kamar'])
+                    ->where('user_id', $user->id)
+                    ->latest()
+                    ->take(5)
+                    ->get();
+
+                $unreadCount = NotifikasiPenghuni::query()
+                    ->where('user_id', $user->id)
+                    ->whereNull('read_at')
+                    ->count();
+
+                $pendingRatingReport = LaporanPerawatan::query()
+                    ->with('kamar')
+                    ->where('penghuni_id', $user->id)
+                    ->where('status', 'Selesai')
+                    ->whereNull('nilai_rating')
+                    ->latest('selesai_pada')
+                    ->first();
+            }
+
+            $view->with([
+                'tenantNotifications' => $notifications,
+                'tenantUnreadNotifications' => $unreadCount,
+                'tenantPendingRatingReport' => $pendingRatingReport,
+            ]);
         });
     }
 }
