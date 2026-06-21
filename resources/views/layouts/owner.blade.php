@@ -69,6 +69,33 @@
                 <a class="role-switch active" href="{{ route('pemilik.home') }}">Pemilik Kos</a>
                 <span class="role-switch disabled" aria-disabled="true">Penghuni Kos</span>
               </div>
+              <div class="notification-wrap">
+                <button class="icon-button notification-button" type="button" id="notificationButton"
+                  aria-label="Notifikasi laporan" aria-expanded="false">
+                  <i data-lucide="bell"></i>
+                  @if (($ownerNotifications ?? collect())->isNotEmpty())
+                    <span class="notification-count">{{ $ownerNotifications->count() }}</span>
+                  @endif
+                </button>
+                <div class="notification-menu" id="notificationMenu" hidden>
+                  <div class="notification-heading">
+                    <strong>Notifikasi Laporan</strong>
+                    <a href="{{ route('pemilik.laporan') }}">Lihat semua</a>
+                  </div>
+                  @forelse (($ownerNotifications ?? collect()) as $notification)
+                    <a class="notification-item" href="{{ route('pemilik.laporan') }}">
+                      <span class="notification-icon"><i data-lucide="wrench"></i></span>
+                      <span>
+                        <strong>Kamar {{ $notification->kamar?->nomor ?? '-' }}</strong>
+                        <small>{{ $notification->penghuni?->name ?? 'Penghuni' }}: {{ $notification->masalah }}</small>
+                        <em>{{ $notification->status }}</em>
+                      </span>
+                    </a>
+                  @empty
+                    <div class="notification-empty">Belum ada laporan aktif.</div>
+                  @endforelse
+                </div>
+              </div>
               <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button class="icon-button" type="submit" aria-label="Logout"><i data-lucide="log-out"></i></button>
@@ -92,6 +119,23 @@
             item.classList.toggle('open');
             submenu.classList.toggle('open');
         }
+
+        const notificationButton = document.getElementById('notificationButton');
+        const notificationMenu = document.getElementById('notificationMenu');
+
+        notificationButton?.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const willOpen = notificationMenu.hidden;
+            notificationMenu.hidden = !willOpen;
+            notificationButton.setAttribute('aria-expanded', String(willOpen));
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!notificationMenu?.hidden && !notificationMenu.contains(event.target)) {
+                notificationMenu.hidden = true;
+                notificationButton?.setAttribute('aria-expanded', 'false');
+            }
+        });
     </script>
   </body>
 </html>

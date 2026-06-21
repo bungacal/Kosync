@@ -153,6 +153,10 @@ class DatabaseSeeder extends Seeder
             'kos_id' => $kos->id,
             'nomor' => $kamar['nomor'],
             'lantai' => $kamar['lantai'],
+            'harga' => 1200000,
+            'ukuran' => '3 x 4 m',
+            'tipe' => 'Kamar standar',
+            'fasilitas' => ['WiFi', 'Kamar mandi dalam'],
             'status' => 'Kosong',
         ]))->keyBy('nomor');
     }

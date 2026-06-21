@@ -53,6 +53,14 @@ Route::middleware(['auth'])->group(function () {
          ->name('pemilik.daftar-kamar');
     Route::get('/pemilik/denah-lantai', [KamarController::class, 'denahLantai'])
          ->name('pemilik.denah-lantai');
+    Route::post('/pemilik/kamar', [KamarController::class, 'storeKamar'])
+         ->name('pemilik.kamar.store');
+    Route::patch('/pemilik/kamar/{id}', [KamarController::class, 'updateKamar'])
+         ->name('pemilik.kamar.update');
+    Route::post('/pemilik/penghuni', [KamarController::class, 'storePenghuni'])
+         ->name('pemilik.penghuni.store');
     Route::delete('/pemilik/kamar/{id}', [KamarController::class, 'destroy'])
          ->name('pemilik.kamar.destroy');
+    Route::delete('/pemilik/kamar', [KamarController::class, 'destroySelected'])
+         ->name('pemilik.kamar.destroy-selected');
 });

@@ -7,10 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['kos_id', 'penghuni_id', 'nomor', 'lantai', 'status'])]
+#[Fillable(['kos_id', 'penghuni_id', 'nomor', 'lantai', 'harga', 'ukuran', 'tipe', 'fasilitas', 'status'])]
 class Kamar extends Model
 {
     protected $table = 'kamar';
+
+    protected function casts(): array
+    {
+        return [
+            'fasilitas' => 'array',
+        ];
+    }
 
     public function kos(): BelongsTo
     {
