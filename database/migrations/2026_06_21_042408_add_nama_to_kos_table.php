@@ -7,6 +7,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasColumn('kos', 'nama')) {
+            return;
+        }
+
         Schema::table('kos', function (Blueprint $table) {
             $table->string('nama')->after('pemilik_id');
         });
@@ -14,6 +18,10 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (! Schema::hasColumn('kos', 'nama')) {
+            return;
+        }
+
         Schema::table('kos', function (Blueprint $table) {
             $table->dropColumn('nama');
         });
